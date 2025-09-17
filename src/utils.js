@@ -56,6 +56,13 @@ const formatTextNode = function (el) {
 const regExpescape = function (str) {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 };
+const escapeHTML = (str) => str.replace(/[&<>"']/g, (m) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+}[m]));
 export {
   isRealNode,
   isSetClassName,
@@ -63,4 +70,5 @@ export {
   searchSubStr,
   formatTextNode,
   regExpescape,
+  escapeHTML
 };

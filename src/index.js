@@ -5,6 +5,7 @@ import {
   searchSubStr,
   formatTextNode,
   regExpescape,
+  escapeHTML
 } from "./utils";
 
 //选中的class name
@@ -235,10 +236,10 @@ class BetterSearch {
     el.parentNode.innerHTML = splitTextList.reduce((html, splitText, i) => {
       const text =
         html +
-        splitText +
+        escapeHTML(splitText) +
         (i < splitTextList.length - 1
-          ? `<mark class="search-highlight" mark-id="${markId}">${highlightList[i]}</mark>`
-          : `<template search-highlight>${el.data}</template>`);
+          ? `<mark class="search-highlight" mark-id="${markId}">${escapeHTML(highlightList[i])}</mark>`
+          : `<template search-highlight>${escapeHTML(el.data)}</template>`);
       if (isSame) markId++;
       return text;
     }, "");
