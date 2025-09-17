@@ -41,11 +41,10 @@ class BetterSearch {
   }
   //插入默认的style
   initStyle() {
-    if (document.querySelector('style[type="betterSearch"]')) return;
-    const css = `.${currentSelectClass}{background: #FF9632 !important;}`;
-    let style = document.createElement("style");
-    style.setAttribute("type", "betterSearch");
-    style.appendChild(document.createTextNode(css));
+    if (document.getElementById("better-search-style")) return;
+    const style = document.createElement("style");
+    style.id = "better-search-style";
+    style.textContent = `.${currentSelectClass}{background:#FF9632!important;}`;
     document.head.appendChild(style);
   }
   search(keyword) {
@@ -158,61 +157,24 @@ class BetterSearch {
   }
   //删除高亮的class
   removeSelectClass(dom) {
+    if (!dom) return;
     dom.forEach((item) => {
       item.classList.remove(currentSelectClass);
     });
   }
   //跳转到目标dom
   goNode(index) {
-    const that = this;
-    this.domList[index].forEach((list) => {
-      const parentNodeList = that.getParentNodeList(list);
-      const item = list.getBoundingClientRect();
-      let overflowX = null;
-      let overflowY = null;
-      for (let pn of parentNodeList) {
-        const indexY = that.overflowYDom.indexOf(pn);
-        const indexX = that.overflowXDom.indexOf(pn);
-        if (indexY > -1) {
-          //存在纵向滚动
-          overflowY = that.overflowYDom[indexY];
-          break;
-        }
-        if (indexX > -1) {
-          //存在横向滚动
-          overflowX = that.overflowXDom[indexX];
-          break;
-        }
+    let domElements = this.domList[index];
+    if (!domElements) return;
+    let firstElement = domElements[0];
+    if (firstElement) {
+      if (firstElement.scrollIntoViewIfNeeded) {
+        firstElement.scrollIntoViewIfNeeded();
+      } else {
+        firstElement.scrollIntoView();
       }
-      if (overflowY) {
-        const wrapY = overflowY.getBoundingClientRect();
-        const itemTop = item.top + overflowY.scrollTop;
-        //纵向距离
-        let offsetTop = itemTop - wrapY.top - 60;
-        //纵向定位
-        overflowY.scrollTo(0, offsetTop ? offsetTop : 0);
-      }
-
-      // const wrapX = overflowX.getBoundingClientRect()
-      // const itemTop = item.top + that.srcoll.scrollTop
-      // const wrapTop = wrap.top
-      // //纵向距离
-      // let offsetTop = itemTop - wrapTop - 60
-      // //横向定位
-      // const overflowXIndex = list.getAttribute('overflow-x-index') * 1
-      // const offsetLeft = item.x - wrap.x
-      // if (overflowXIndex > -1) {
-      //     if (offsetLeft > wrap.width) {
-      //         that.overflowXDom[overflowXIndex].scrollTo(offsetLeft - wrap.width + 60, 0)
-      //     } else {
-      //         that.overflowXDom[overflowXIndex].scrollTo(0, 0)
-      //     }
-      // }
-      // //纵向定位
-      // that.srcoll.scrollTo(0, offsetTop ? offsetTop : 0)
-      //染色
-      that.addSelectClass([list]);
-    });
+    }
+    this.addSelectClass(domElements);
   }
   //获取所有父级节点
   getParentNodeList(el) {
